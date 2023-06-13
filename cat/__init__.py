@@ -135,6 +135,8 @@ class PipelineTask(luigi.Task):
     # Toil options
     batchSystem = luigi.Parameter(default='single_machine', significant=False)
     maxCores = luigi.IntParameter(default=8, significant=False)
+    maxDisk = luigi.IntParameter(default='25000000000', significant=False)
+    maxMemory = luigi.IntParameter(default='25000000000', significant=False)
     parasolCommand = luigi.Parameter(default=None, significant=False)
     defaultMemory = luigi.Parameter(default='8G', significant=False)
     disableCaching = luigi.BoolParameter(default=False, significant=False)
@@ -600,6 +602,7 @@ class ToilTask(PipelineTask):
         namespace = parser.parse_args([''])  # empty jobStore attribute
         namespace.jobStore = None  # jobStore attribute will be updated per-batch
         namespace.logLevel = self.logLevel
+        print(namespace)
         return namespace
 
 
