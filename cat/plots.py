@@ -243,8 +243,14 @@ def missing_rate_plot(consensus_data, ordered_genomes, biotypes, missing_plot_tg
     base_title = 'Number of missing orthologs in consensus set'
     gene_missing_df = json_biotype_counter_to_df(consensus_data, 'Gene Missing')
     gene_missing_df.columns = ['biotype', 'Genes', 'genome']
+    print("Gene missing")
+    with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+        print(gene_missing_df)
     transcript_missing_df = json_biotype_counter_to_df(consensus_data, 'Transcript Missing')
     transcript_missing_df.columns = ['biotype', 'Transcripts', 'genome']
+    print("Transcript missing")
+    with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+        print(transcript_missing_df)
     df = transcript_missing_df.merge(gene_missing_df, on=['genome', 'biotype'])
     df = pd.melt(df, id_vars=['biotype', 'genome'])
     ylabel = 'Number of genes or transcripts'
@@ -253,12 +259,18 @@ def missing_rate_plot(consensus_data, ordered_genomes, biotypes, missing_plot_tg
         tot_df = df.groupby(['genome', 'biotype', 'variable']).aggregate(sum).reset_index()
         generic_barplot(tot_df, pdf, '', ylabel, base_title, x='genome', y='value',
                         col='variable', row_order=ordered_genomes)
+        print("Total")
+        with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+            print(tot_df)
         for biotype in biotypes:
             biotype_df = biotype_filter(df, biotype)
             if biotype_df is None:
                 continue
             biotype_df = biotype_df.groupby(['genome', 'variable']).aggregate(sum).reset_index()
             title = base_title + ' for biotype {}'.format(biotype)
+            print(title)
+            with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+                print(biotype_df)
             generic_barplot(biotype_df, pdf, '', ylabel, title, x='genome', y='value',
                             col='variable', row_order=ordered_genomes)
     af.move_to_final_destination()
@@ -361,8 +373,10 @@ def pb_support_plot(consensus_data, ordered_genomes, pb_genomes, pb_support_tgt)
 
 def completeness_plot(consensus_data, ordered_genomes, biotypes, completeness_plot_tgt, gene_biotype_map,
                       transcript_biotype_map):
+    print("Completeness")
     def adjust_plot(g, gene_count, tx_count):
         for ax, c in zip(*[g.axes[0], [gene_count, tx_count]]):
+            print(c)
             _ = ax.set_ylim(0, c)
             ax.spines['top'].set_edgecolor('#e74c3c')
             ax.spines['top'].set_linewidth(2)
@@ -375,6 +389,9 @@ def completeness_plot(consensus_data, ordered_genomes, biotypes, completeness_pl
         tot_df = df.groupby(by=['genome', 'category']).aggregate(np.sum).reset_index()
         tot_df = sort_long_df(tot_df, ordered_genomes)
         title = 'Number of comparative genes/transcripts present'
+        print(title)
+        with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+            print(tot_df)
         g = generic_barplot(pdf=pdf, data=tot_df, x='genome', y='count', col='category', xlabel='',
                             sharey=False, ylabel='Number of genes/transcripts', title=title,
                             col_order=['Gene', 'Transcript'], close=False, palette=choose_palette(ordered_genomes))
@@ -387,6 +404,13 @@ def completeness_plot(consensus_data, ordered_genomes, biotypes, completeness_pl
                 gene_biotype_count = len({i for i, b in gene_biotype_map.items() if b == biotype})
                 tx_biotype_count = len({i for i, b in transcript_biotype_map.items() if b == biotype})
                 title = 'Number of comparative genes/transcripts present for biotype {}'.format(biotype)
+                print(title)
+                with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+                    print(biotype_df)
+                print("gene_biotype_count")
+                print(gene_biotype_count)
+                print("tx_biotype_count")
+                print(tx_biotype_count)
                 g = generic_barplot(pdf=pdf, data=biotype_df, x='genome', y='count', col='category', xlabel='',
                                     sharey=False, ylabel='Number of genes/transcripts',
                                     title=title, col_order=['Gene', 'Transcript'], close=False,
