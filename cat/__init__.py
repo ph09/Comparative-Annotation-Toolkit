@@ -1347,36 +1347,14 @@ class TransMapPsl(PipelineTask):
     def run(self):
         tm_args = self.get_module_args(TransMap, genome=self.genome)
         logger.info('Running transMap for {}.'.format(self.genome))
-        tmp_tm_file = luigi.LocalTarget(is_tmp=True)
-        tm_cmd = ['pslMap', '-chainMapFile', tm_args.ref_psl, tm_args.chain_file, tmp_tm_file]
-        # TODO: currently the direction of the chain file between the reference and the genome file is not 
-        # specified. Try each way to see which one works.
-        if self.chain_mode:
-            tm_cmd = ['pslMap', '-swapMap', '-chainMapFile', tm_args.ref_psl, tm_args.chain_file, tmp_tm_file]
-        try:
-            with tmp_tm_file.open('w') as tmp_fh:
-                tools.procOps.run_proc(tm_cmd, stderr='/dev/null')
-        except:
-            tm_cmd_swap = ['pslMap', '-swapMap', '-chainMapFile', tm_args.ref_psl, tm_args.chain_file, tmp_tm_file]
-            if self.chain_mode:
-                tm_cmd_swap = ['pslMap', '-chainMapFile', tm_args.ref_psl, tm_args.chain_file, tmp_tm_file]
-            with tmp_tm_file.open('w') as tmp_fh:
-                tools.procOps.run_proc(tm_cmd_swap, stderr='/dev/null')
-
-        cmd = [['pslMapPostChain', tmp_tm_file, '/dev/stdout'],
+        cmd = [['pslMap', '-chainMapFile', tm_args.ref_psl, tm_args.chain_file, '/dev/stdout'],
+               ['pslMapPostChain', '/dev/stdin', '/dev/stdout'],
                ['sort', '--parallel=4', '-k14,14', '-k16,16n'],
                ['pslRecalcMatch', '/dev/stdin', tm_args.two_bit, tm_args.transcript_fasta, 'stdout'],
                ['sort', '--parallel=4', '-k10,10']]  # re-sort back to query name for filtering
         tmp_file = luigi.LocalTarget(is_tmp=True)
-        try:
-            with tmp_file.open('w') as tmp_fh:
-                tools.procOps.run_proc(cmd, stdout=tmp_fh, stderr='/dev/null')
-        except:
-            # TODO: Don't know why transMap occasionally fails on test data?!?
-            logger.warning("Part of transMap command failed, running again... ")
-            with tmp_file.open('w') as tmp_fh:
-                tools.procOps.run_proc(cmd, stdout=tmp_fh, stderr='/dev/null')
-
+        with tmp_file.open('w') as tmp_fh:
+            tools.procOps.run_proc(cmd, stdout=tmp_fh, stderr='/dev/null')
         tm_psl_tgt, tm_gp_tgt = self.output()
         tools.fileOps.ensure_file_dir(tm_psl_tgt.path)
         with tm_psl_tgt.open('w') as outf:
