@@ -1221,11 +1221,11 @@ class Chaining(ToilTask):
         ref_files = GenomeFiles.get_args(pipeline_args, pipeline_args.ref_genome)
         tgt_files = {genome: GenomeFiles.get_args(pipeline_args, genome) for genome in pipeline_args.target_genomes}
         tgt_two_bits = {genome: tgt_files[genome].two_bit for genome in pipeline_args.target_genomes}
-        chain_files = {genome: os.path.join(base_dir, genome, '{}-{}.chain'.format(pipeline_args.ref_genome, genome))
+        chain_files = {genome: os.path.join(base_dir, '{}-{}.chain'.format(pipeline_args.ref_genome, genome))
                        for genome in pipeline_args.target_genomes}
-        bigchain_files = {genome: os.path.join(base_dir, genome, '{}-{}.bigChain.bb'.format(pipeline_args.ref_genome, genome)) 
+        bigchain_files = {genome: os.path.join(base_dir, '{}-{}.bigChain.bb'.format(pipeline_args.ref_genome, genome)) 
                        for genome in pipeline_args.target_genomes}
-        biglink_files = {genome: os.path.join(base_dir, genome, '{}-{}.bigChain.link.bb'.format(pipeline_args.ref_genome, genome))
+        biglink_files = {genome: os.path.join(base_dir, '{}-{}.bigChain.link.bb'.format(pipeline_args.ref_genome, genome))
                        for genome in pipeline_args.target_genomes}
         # TODO: Add equivalent files for chaining in the other direction, so chains can be viewed on both 
         # the reference genome's assemblyHub and the target genome's
@@ -1251,9 +1251,9 @@ class Chaining(ToilTask):
     @staticmethod
     def get_genome_args(pipeline_args, genome):
         base_dir = os.path.join(pipeline_args.work_dir, 'chaining')
-        chain_file = os.path.join(base_dir, genome, '{}-{}.chain'.format(pipeline_args.ref_genome, genome))
-        bigchain_file = os.path.join(base_dir, genome, '{}-{}.bigChain.bb'.format(pipeline_args.ref_genome, genome))
-        biglink_file = os.path.join(base_dir, genome, '{}-{}.bigChain.link.bb'.format(pipeline_args.ref_genome, genome))
+        chain_file = os.path.join(base_dir, '{}-{}.chain'.format(pipeline_args.ref_genome, genome))
+        bigchain_file = os.path.join(base_dir, '{}-{}.bigChain.bb'.format(pipeline_args.ref_genome, genome))
+        biglink_file = os.path.join(base_dir, '{}-{}.bigChain.link.bb'.format(pipeline_args.ref_genome, genome))
         args = tools.misc.HashableNamespace()
         args.chain_file = chain_file
         args.bigchain_file = bigchain_file
