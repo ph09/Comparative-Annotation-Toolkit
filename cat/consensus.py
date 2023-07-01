@@ -977,7 +977,10 @@ def write_consensus_gff3(consensus_gene_dict, consensus_gff3):
             vals = list(map(bool, attrs[feature].split(',')))
         except KeyError:
             return 'N/A'
-        return vals[i]
+        if i >= len(vals):
+            return False
+        else:
+            return vals[i]
 
     def get_gene_name(attrs):
         """returns the gene name associated with a given attrs list"""
