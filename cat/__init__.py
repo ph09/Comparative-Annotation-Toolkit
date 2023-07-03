@@ -2655,6 +2655,30 @@ class CreateTrackDbs(RebuildableTask):
         return luigi.LocalTarget(directory_args.trackdbs[self.genome])
 
     def run(self):
+        pipeline_args = self.get_pipeline_args()
+        directory_args = CreateDirectoryStructure.get_args(pipeline_args)
+        out_dir = os.path.join(directory_args.out_dir, self.genome)
+        org_str = construct_org_str(directory_args.genomes)
+        with self.output().open('w') as outf:
+            for f in os.listdir(out_dir):
+                if f.endswith('.txt'):
+                    outf.write('include {}\n'.format(f))
+            outf.write('\n\n')
+
+            outf.write(snake_composite.format(org_str=org_str))
+            for genome in directory_args.genomes:
+                # by default, only the reference genome is visible unless we are on the reference, then all are
+                if self.genome == pipeline_args.ref_genome:
+                    if genome == pipeline_args.ref_genome:
+                        visibility = 'hide'
+                    else:
+                        visibility = 'full'
+                else:
+                    visibility = 'hide' if genome != pipeline_args.ref_genome else 'full'
+                hal_path = '../{}'.format(os.path.basename(pipeline_args.hal))
+                outf.write(snake_template.format(genome=genome, hal_path=hal_path, visibility=visibility))
+    '''
+    def run(self):
         # def chain_hub_tracks(pipeline_args, genome):
         def chain_hub_tracks(pipeline_args):
             """ Create chain tracks between genome and the reference genome """ 
@@ -2841,7 +2865,7 @@ class CreateTrackDbs(RebuildableTask):
             #             outf.write(bigpsl_template_synteny.format(name='Synteny-{}-{}'.format(self.genome, genome), 
             #                 short_label='synteny-{}-{}'.format(self.genome, genome), long_label='synteny-{}-{}'.format(self.genome, genome),
             #                  path=bigPsl_path, visibility=visibility, genome=genome))
-
+    '''
 
 class DenovoTrack(TrackTask):
     """Constructs a denovo track"""
