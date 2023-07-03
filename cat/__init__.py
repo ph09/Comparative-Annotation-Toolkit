@@ -2626,10 +2626,6 @@ class CreateTracksDriverTask(PipelineWrapperTask):
                 yield self.clone(AugustusTrack, track_path=os.path.join(out_dir, 'augustus.bb'),
                                  trackdb_path=os.path.join(out_dir, 'augustus.txt'))
 
-        if self.genome in pipeline_args.rnaseq_genomes:
-            yield self.clone(SpliceTrack, track_path=os.path.join(out_dir, 'splices.bb'),
-                             trackdb_path=os.path.join(out_dir, 'splices.txt'))
-
         if self.genome in pipeline_args.isoseq_genomes:
             isoseq_bams = []
             # add a number to make names unique
@@ -2638,6 +2634,10 @@ class CreateTracksDriverTask(PipelineWrapperTask):
                 isoseq_bams.append((bam, new_bam))
             yield self.clone(IsoSeqBamTrack, trackdb_path=os.path.join(out_dir, 'isoseq_bams.txt'),
                              isoseq_bams=tuple(isoseq_bams))
+
+        #if self.genome in pipeline_args.rnaseq_genomes:
+        #    yield self.clone(SpliceTrack, track_path=os.path.join(out_dir, 'splices.bb'),
+        #                     trackdb_path=os.path.join(out_dir, 'splices.txt'))
 
         
             
