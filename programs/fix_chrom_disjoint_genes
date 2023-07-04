@@ -47,6 +47,7 @@ def main():
         cmd = tools.gff3.convert_gff3_cmd(attrs, args.gff3)
         tools.procOps.run_proc(cmd, stdout=gp)
         tx_dict = tools.transcripts.get_gene_pred_dict(gp)
+    print(tx_dict)
     disjoint_genes = tools.gff3.check_gff3_for_disjoint_gene_ids(tx_dict)
     if not disjoint_genes:
         print("Did not find any disjoint genes. No output written.")
