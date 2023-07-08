@@ -133,15 +133,19 @@ def generate_consensus(args):
                'Original Introns': collections.defaultdict(list),
                'Splice Annotation Support': collections.defaultdict(list),
                'Exon Annotation Support': collections.defaultdict(list),
-               'IsoSeq Transcript Validation': collections.Counter()}
+               'IsoSeq Transcript Validation': collections.Counter(),
+               'List Transcript Missing': collections.defaultdict(list),
+               'List Gene Missing': collections.defaultdict(list)}
 
     # we can keep track of missing stuff now
     for gene_biotype, tx_df in best_df.groupby('GeneBiotype'):
         biotype_genes = {gene_id for gene_id, b in gene_biotype_map.items() if b == gene_biotype}
         metrics['Gene Missing'][gene_biotype] = len(biotype_genes) - len(set(tx_df.GeneId))
+        metrics['List Gene Missing'][gene_biotype] = list(set(biotype_genes).difference(set(tx_df.GeneId)))
     for tx_biotype, tx_df in best_df.groupby('TranscriptBiotype'):
         biotype_txs = {gene_id for gene_id, b in transcript_biotype_map.items() if b == tx_biotype}
         metrics['Transcript Missing'][tx_biotype] = len(biotype_txs) - len(set(tx_df.TranscriptId))
+        metrics['List Transcript Missing'][tx_biotype] = list(set(biotype_txs).difference(set(tx_df.TranscriptId)))
 
     # main consensus finding -- using incorporate_tx to transform best scoring transcripts
     # stores a mapping of alignment IDs to tags for the final consensus set
@@ -153,13 +157,21 @@ def generate_consensus(args):
     # if we ran in either denovo mode, load those data and detect novel genes
     if len(args.denovo_tx_modes) > 0:
         metrics['denovo'] = {}
+        metrics['denovo_genes'] = {}
         for tx_mode in args.denovo_tx_modes:
             if args.denovo_allow_bad_annot_or_tm == True:
                 metrics['denovo'][tx_mode] = {'Possible paralog': 0, 'Poor alignment': 0, 'Putative novel': 0,
                                           'Possible fusion': 0, 'Putative novel isoform': 0, 'Bad annot or tm': 0}
+                metrics['denovo_genes'][tx_mode] = {'Possible paralog': collections.defaultdict(list), 'Poor alignment': collections.defaultdict(list), 
+                                              'Putative novel': collections.defaultdict(list), 'Possible fusion': collections.defaultdict(list), 
+                                              'Putative novel isoform': collections.defaultdict(list), 'Bad annot or tm': collections.defaultdict(list)}
             else:
                 metrics['denovo'][tx_mode] = {'Possible paralog': 0, 'Poor alignment': 0, 'Putative novel': 0,
                                           'Possible fusion': 0, 'Putative novel isoform': 0}
+                metrics['denovo_genes'][tx_mode] = {'Possible paralog': collections.defaultdict(list), 'Poor alignment': collections.defaultdict(list), 
+                                              'Putative novel': collections.defaultdict(list), 'Possible fusion': collections.defaultdict(list), 
+                                              'Putative novel isoform': collections.defaultdict(list)}
+                
         denovo_dict = find_novel(args.db_path, tx_dict, consensus_dict, ref_df, metrics, gene_biotype_map,
                                  args.denovo_num_introns, args.in_species_rna_support_only,
                                  args.denovo_tx_modes, args.denovo_splice_support, args.denovo_exon_support,
@@ -705,6 +717,7 @@ def find_novel(db_path, tx_dict, consensus_dict, ref_df, metrics, gene_biotype_m
 
         # record some metrics
         metrics['denovo'][tx_mode][s.TranscriptClass.replace('_', ' ').capitalize()] += 1
+        metrics['denovo_genes'][tx_mode][s.TranscriptClass.replace('_', ' ').capitalize()].append(s.AssignedGeneId)
         metrics['Transcript Modes'][tx_mode] += 1
         metrics['Splice Support']['unknown_likely_coding'].append(s.IntronRnaSupportPercent)
         metrics['Exon Support']['unknown_likely_coding'].append(s.ExonRnaSupportPercent)
