@@ -162,15 +162,15 @@ def generate_consensus(args):
             if args.denovo_allow_bad_annot_or_tm == True:
                 metrics['denovo'][tx_mode] = {'Possible paralog': 0, 'Poor alignment': 0, 'Putative novel': 0,
                                           'Possible fusion': 0, 'Putative novel isoform': 0, 'Bad annot or tm': 0}
-                metrics['denovo_genes'][tx_mode] = {'Possible paralog': collections.defaultdict(list), 'Poor alignment': collections.defaultdict(list), 
-                                              'Putative novel': collections.defaultdict(list), 'Possible fusion': collections.defaultdict(list), 
-                                              'Putative novel isoform': collections.defaultdict(list), 'Bad annot or tm': collections.defaultdict(list)}
+                metrics['denovo_genes'][tx_mode] = {'Possible paralog': [], 'Poor alignment': [], 
+                                              'Putative novel': [], 'Possible fusion': [], 
+                                              'Putative novel isoform': [], 'Bad annot or tm': []}
             else:
                 metrics['denovo'][tx_mode] = {'Possible paralog': 0, 'Poor alignment': 0, 'Putative novel': 0,
                                           'Possible fusion': 0, 'Putative novel isoform': 0}
-                metrics['denovo_genes'][tx_mode] = {'Possible paralog': collections.defaultdict(list), 'Poor alignment': collections.defaultdict(list), 
-                                              'Putative novel': collections.defaultdict(list), 'Possible fusion': collections.defaultdict(list), 
-                                              'Putative novel isoform': collections.defaultdict(list)}
+                metrics['denovo_genes'][tx_mode] = {'Possible paralog': [], 'Poor alignment': [], 
+                                              'Putative novel': [], 'Possible fusion': [], 
+                                              'Putative novel isoform': []}
                 
         denovo_dict = find_novel(args.db_path, tx_dict, consensus_dict, ref_df, metrics, gene_biotype_map,
                                  args.denovo_num_introns, args.in_species_rna_support_only,
