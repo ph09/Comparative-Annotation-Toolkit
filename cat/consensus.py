@@ -587,6 +587,8 @@ def find_novel(db_path, tx_dict, consensus_dict, ref_df, metrics, gene_biotype_m
         """Is this CGP/PB transcript with an assigned gene ID supported and have a novel splice?"""
         denovo_tx_obj = tx_dict[s.AlignmentId]
         print(len(denovo_tx_obj.intron_intervals))
+        print("Denovo: ")
+        print(denovo_num_introns)
         if len(denovo_tx_obj.intron_intervals) < denovo_num_introns:
             return None
         elif in_species_rna_support_only and s.ExonRnaSupportPercent <= denovo_exon_support or \
