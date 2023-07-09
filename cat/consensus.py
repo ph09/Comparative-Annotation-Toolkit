@@ -161,16 +161,18 @@ def generate_consensus(args):
         for tx_mode in args.denovo_tx_modes:
             if args.denovo_allow_bad_annot_or_tm == True:
                 metrics['denovo'][tx_mode] = {'Possible paralog': 0, 'Poor alignment': 0, 'Putative novel': 0,
-                                          'Possible fusion': 0, 'Putative novel isoform': 0, 'Bad annot or tm': 0}
+                                          'Possible fusion': 0, 'Putative novel isoform': 0, 'Bad annot or tm': 0,
+                                             'Single exon': 0}
                 metrics['denovo_genes'][tx_mode] = {'Possible paralog': [], 'Poor alignment': [], 
                                               'Putative novel': [], 'Possible fusion': [], 
-                                              'Putative novel isoform': [], 'Bad annot or tm': []}
+                                              'Putative novel isoform': [], 'Bad annot or tm': [],
+                                                   'Single exon': []}
             else:
                 metrics['denovo'][tx_mode] = {'Possible paralog': 0, 'Poor alignment': 0, 'Putative novel': 0,
-                                          'Possible fusion': 0, 'Putative novel isoform': 0}
+                                          'Possible fusion': 0, 'Putative novel isoform': 0, 'Single exon': 0}
                 metrics['denovo_genes'][tx_mode] = {'Possible paralog': [], 'Poor alignment': [], 
                                               'Putative novel': [], 'Possible fusion': [], 
-                                              'Putative novel isoform': []}
+                                              'Putative novel isoform': [], 'Single exon': []}
                 
         denovo_dict = find_novel(args.db_path, tx_dict, consensus_dict, ref_df, metrics, gene_biotype_map,
                                  args.denovo_num_introns, args.in_species_rna_support_only,
@@ -586,11 +588,9 @@ def find_novel(db_path, tx_dict, consensus_dict, ref_df, metrics, gene_biotype_m
     def is_novel_supported(s):
         """Is this CGP/PB transcript with an assigned gene ID supported and have a novel splice?"""
         denovo_tx_obj = tx_dict[s.AlignmentId]
-        print(len(denovo_tx_obj.intron_intervals))
-        print("Denovo: ")
-        print(denovo_num_introns)
         if len(denovo_tx_obj.intron_intervals) < denovo_num_introns:
-            return None
+            tx_class = 'single_exon'
+            return tx_class
         elif in_species_rna_support_only and s.ExonRnaSupportPercent <= denovo_exon_support or \
                         s.IntronRnaSupportPercent <= denovo_splice_support:
             return None
