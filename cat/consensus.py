@@ -717,7 +717,7 @@ def find_novel(db_path, tx_dict, consensus_dict, ref_df, metrics, gene_biotype_m
 
         # record some metrics
         metrics['denovo'][tx_mode][s.TranscriptClass.replace('_', ' ').capitalize()] += 1
-        metrics['denovo_genes'][tx_mode][s.TranscriptClass.replace('_', ' ').capitalize()].append(s.AssignedGeneId)
+        metrics['denovo_genes'][tx_mode][s.TranscriptClass.replace('_', ' ').capitalize()].append(s.AlignmentId)
         metrics['Transcript Modes'][tx_mode] += 1
         metrics['Splice Support']['unknown_likely_coding'].append(s.IntronRnaSupportPercent)
         metrics['Exon Support']['unknown_likely_coding'].append(s.ExonRnaSupportPercent)
