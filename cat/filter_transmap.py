@@ -324,7 +324,7 @@ def filter_clusters(clustered, transcript_gene_map, gene_name_map, scores, metri
     # add gene IDs and scores. clustered.gene is actually AlignmentId fields
     clustered['gene_id'] = [transcript_gene_map[tools.nameConversions.strip_alignment_numbers(x)] for x in clustered.gene]
     clustered['scores'] = [scores[x] for x in clustered.gene]
-
+    print("Clustered:")
     print(clustered)
 
     to_remove_alns = set() # set of specific alignment IDs to remove
@@ -338,6 +338,7 @@ def filter_clusters(clustered, transcript_gene_map, gene_name_map, scores, metri
             alt_loci.append([gene_id, construct_alt_loci(group, best_cluster)])
             bad_clusters= group[group['#cluster'].isin(set(group['#cluster']) - {best_cluster})]
             to_remove_alns.update(set(bad_clusters['gene']))
+    print("Alt Loci: ")
     print(alt_loci)
     if len(alt_loci) > 0:
         paralog_df = pd.DataFrame(alt_loci, columns=['GeneId', 'GeneAlternateLoci'])
