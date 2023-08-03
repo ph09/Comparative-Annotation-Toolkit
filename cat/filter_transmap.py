@@ -302,7 +302,7 @@ def find_best_group(group, key):
     if avg_scores.sort_values('scores', ascending=False).iloc[0][key] == avg_scores.sort_values('scores', ascending=False).iloc[1][key]:
         return [avg_scores.sort_values('scores', ascending=False).iloc[0][key], avg_scores.sort_values('scores', ascending=False).iloc[1][key]]
     else:
-        return avg_scores.sort_values('scores', ascending=False).iloc[0][key]
+        return [avg_scores.sort_values('scores', ascending=False).iloc[0][key]]
 
 def construct_alt_loci(group, best_cluster):
     """
