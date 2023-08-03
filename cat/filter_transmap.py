@@ -56,6 +56,7 @@ def filter_transmap(tm_psl, ref_psl, tm_gp, db_path, psl_tgt, global_near_best, 
     :return:
     """
     # load all of the input alignments
+    print("Filtering:")
     unfiltered = tools.psl.get_alignment_dict(tm_psl)
     unfiltered_tx_dict = tools.transcripts.get_gene_pred_dict(tm_gp)
     ref_psl_dict = tools.psl.get_alignment_dict(ref_psl)
