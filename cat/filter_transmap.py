@@ -299,10 +299,7 @@ def find_best_group(group, key):
     cluster or gene_id
     """
     avg_scores = group[[key, 'scores']].groupby(key, as_index=False).mean()
-    if avg_scores.sort_values('scores', ascending=False)[0] == avg_scores.sort_values('scores', ascending=False)[1]:
-        return [avg_scores.sort_values('scores', ascending=False).iloc[0][key], avg_scores.sort_values('scores', ascending=False).iloc[1][key]]
-    else:
-        return avg_scores.sort_values('scores', ascending=False).iloc[0][key]
+    return [avg_scores.sort_values('scores', ascending=False).iloc[0][key], avg_scores.sort_values('scores', ascending=False).iloc[1][key]]
 
 
 def construct_alt_loci(group, best_cluster):
