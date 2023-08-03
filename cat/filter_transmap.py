@@ -362,11 +362,7 @@ def filter_clusters(clustered, transcript_gene_map, gene_name_map, scores, metri
     for cluster_id, group in paralog_filtered.groupby('#cluster'):
         if len(set(group['gene_id'])) > 1:
             best_gene = find_best_group(group, 'gene_id')
-            genes_to_keep = [best_gene]
-            for candGene in set(group.gene_id):
-                if gene_name_map[best_gene] == gene_name_map[candGene]:
-                    genes_to_keep.append(candGene)
-            collapsed_gene_ids = set(group.gene_id) - set(genes_to_keep)
+            collapsed_gene_ids = set(group.gene_id)
             gene_biotype = gene_biotype_map[best_gene]
             metrics['Gene Family Collapse'][gene_biotype][len(collapsed_gene_ids)] += 1
             collapsed_gene_names = {gene_name_map[x] for x in collapsed_gene_ids}
