@@ -73,6 +73,7 @@ def filter_transmap(tm_psl, ref_psl, tm_gp, db_path, psl_tgt, global_near_best, 
     # get transcript -> biotype and gene -> biotype maps for metrics
     transcript_biotype_map = tools.sqlInterface.get_transcript_biotype_map(db_path)
     gene_biotype_map = tools.sqlInterface.get_gene_biotype_map(db_path)
+    gene_name_map = tools.sqlInterface.get_gene_name_map(db_path)
     # get annotation information for common names
     annotation_df = tools.sqlInterface.load_annotation(db_path)
     gene_name_map = dict(list(zip(annotation_df.GeneId, annotation_df.GeneName)))
@@ -359,7 +360,11 @@ def filter_clusters(clustered, transcript_gene_map, gene_name_map, scores, metri
     for cluster_id, group in paralog_filtered.groupby('#cluster'):
         if len(set(group['gene_id'])) > 1:
             best_gene = find_best_group(group, 'gene_id')
-            collapsed_gene_ids = set(group.gene_id) - {best_gene}
+            genes_to_keep = [best_gene]
+            for candGene in set(group.gene_id):
+                if gene_name_map[best_gene] == gene_name_map[candGene]:
+                    genes_to_keep.append(candGene)
+            collapsed_gene_ids = set(group.gene_id) - set(genes_to_keep)
             gene_biotype = gene_biotype_map[best_gene]
             metrics['Gene Family Collapse'][gene_biotype][len(collapsed_gene_ids)] += 1
             collapsed_gene_names = {gene_name_map[x] for x in collapsed_gene_ids}
