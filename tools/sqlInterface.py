@@ -308,11 +308,21 @@ def get_gene_biotype_map(db_path, table=Annotation.__tablename__, index_col='Tra
     :param db_path: path to the attributes database
     :param table: table name. should generally be annotation
     :param index_col: column to index on. should generally be tx_id.
-    :return: dictionary {tx_id: tx_biotype}
+    :return: dictionary {gene_id: gene_biotype}
     """
     df = read_attrs(db_path, table, index_col)
     return dict(list(zip(df.GeneId, df.GeneBiotype)))
 
+def get_gene_name_map(db_path, table=Annotation.__tablename__, index_col='TranscriptId'):
+    """
+    Convenience wrapper for read_attrs that returns a dictionary mapping gene IDs to their names
+    :param db_path: path to the attributes database
+    :param table: table name. should generally be annotation
+    :param index_col: column to index on. should generally be tx_id.
+    :return: dictionary {gene_id: gene_name}
+    """
+    df = read_attrs(db_path, table, index_col)
+    return dict(list(zip(df.GeneId, df.GeneName)))
 
 def get_transcript_biotypes(db_path, table=Annotation):
     """
