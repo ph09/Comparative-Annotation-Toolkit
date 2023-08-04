@@ -334,25 +334,25 @@ def filter_clusters(clustered, transcript_gene_map, gene_name_map, scores, metri
     for gene_id, group in clustered.groupby('gene_id'):
         if len(set(group['#cluster'])) > 1:
             # pick the highest average scoring cluster
-            #print("Cluster:")
-            #print(group)
-            #print("----")
-            #print(set(group['#cluster']))
-            #print("----")
+            print("Cluster:")
+            print(group)
+            print("----")
+            print(set(group['#cluster']))
+            print("----")
             best_clusters_list = find_best_group(group, '#cluster')
-            #print("Best clusters:")
-            #print(best_clusters_list)
-            #print("----")
+            print("Best clusters:")
+            print(best_clusters_list)
+            print("----")
             best_clusters = [int(best_cluster) for best_cluster in best_clusters_list]
             best = best_clusters[0]
             if len(best_clusters) > 1:
                 if best_clusters[0] in cluster_done:
                     best = best_clusters[1]
             cluster_done.append(best)
-            #print("Alt Loci:")
+            print("Alt Loci:")
             alt_loci.append([gene_id, construct_alt_loci(group, best)])
-            #print([gene_id, construct_alt_loci(group, best)])
-            #print("----")
+            print([gene_id, construct_alt_loci(group, best)])
+            print("----")
             bad_clusters= group[group['#cluster'].isin(set(group['#cluster']) - {best})]
             to_remove_alns.update(set(bad_clusters['gene']))
 
