@@ -356,7 +356,7 @@ def filter_clusters(clustered, transcript_gene_map, gene_name_map, scores, metri
             bad_clusters= group[group['#cluster'].isin(set(group['#cluster']) - {best})]
             to_remove_alns.update(set(bad_clusters['gene']))
             print("To be removed:")
-            print(to_remove_alns)
+            print(set(bad_clusters['gene']))
             print("----")
 
     if len(alt_loci) > 0:
