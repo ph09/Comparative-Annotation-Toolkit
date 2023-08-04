@@ -321,7 +321,7 @@ def tx_iter(psl_iter, ref_tx_dict, tx_dict, tx_biotype_map):
         # this psl is target-referenced
         ref_tx = ref_tx_dict[psl.t_name]
         print(psl.t_name)
-         print(psl.q_name)
+        print(psl.q_name)
         tx = tx_dict[psl.q_name]
         biotype = tx_biotype_map[psl.t_name]
         yield ref_tx, tx, psl, biotype
