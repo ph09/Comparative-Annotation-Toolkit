@@ -298,7 +298,7 @@ def find_best_group(group, key):
     cluster or gene_id
     """
     avg_scores = group[[key, 'scores']].groupby(key, as_index=False).mean()
-    if avg_scores.sort_values('scores', ascending=False).iloc[0][key] == avg_scores.sort_values('scores', ascending=False).iloc[1][key]:
+    if abs(avg_scores.sort_values('scores', ascending=False).iloc[0][key] - avg_scores.sort_values('scores', ascending=False).iloc[1][key]) <= 0.002:
         return [avg_scores.sort_values('scores', ascending=False).iloc[0][key], avg_scores.sort_values('scores', ascending=False).iloc[1][key]]
     else:
         return [avg_scores.sort_values('scores', ascending=False).iloc[0][key]]
