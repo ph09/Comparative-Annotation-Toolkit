@@ -299,7 +299,7 @@ def find_best_group(group, key):
     """
     avg_scores = group[[key, 'scores']].groupby(key, as_index=False).mean()
     print(avg_scores.sort_values('scores', ascending=False))
-    if abs(avg_scores.sort_values('scores', ascending=False).iloc[0] - avg_scores.sort_values('scores', ascending=False).iloc[1]) <= 0.002:
+    if abs(avg_scores.sort_values('scores', ascending=False)[0]['scores'] - avg_scores.sort_values('scores', ascending=False)[1]['scores']) <= 0.002:
         return [avg_scores.sort_values('scores', ascending=False).iloc[0][key], avg_scores.sort_values('scores', ascending=False).iloc[1][key]]
     else:
         return [avg_scores.sort_values('scores', ascending=False).iloc[0][key]]
