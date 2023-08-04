@@ -355,6 +355,9 @@ def filter_clusters(clustered, transcript_gene_map, gene_name_map, scores, metri
             print("----")
             bad_clusters= group[group['#cluster'].isin(set(group['#cluster']) - {best})]
             to_remove_alns.update(set(bad_clusters['gene']))
+            print("To be removed:")
+            print(to_remove_alns)
+            print("----")
 
     if len(alt_loci) > 0:
         paralog_df = pd.DataFrame(alt_loci, columns=['GeneId', 'GeneAlternateLoci'])
