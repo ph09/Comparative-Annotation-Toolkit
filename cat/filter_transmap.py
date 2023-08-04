@@ -56,7 +56,6 @@ def filter_transmap(tm_psl, ref_psl, tm_gp, db_path, psl_tgt, global_near_best, 
     :return:
     """
     # load all of the input alignments
-    print("Filtering:")
     unfiltered = tools.psl.get_alignment_dict(tm_psl)
     unfiltered_tx_dict = tools.transcripts.get_gene_pred_dict(tm_gp)
     ref_psl_dict = tools.psl.get_alignment_dict(ref_psl)
@@ -328,23 +327,34 @@ def filter_clusters(clustered, transcript_gene_map, gene_name_map, scores, metri
     # add gene IDs and scores. clustered.gene is actually AlignmentId fields
     clustered['gene_id'] = [transcript_gene_map[tools.nameConversions.strip_alignment_numbers(x)] for x in clustered.gene]
     clustered['scores'] = [scores[x] for x in clustered.gene]
-    print("Clustered:")
-    print(clustered)
-
+    
     to_remove_alns = set() # set of specific alignment IDs to remove
     alt_loci = []  # will become a DataFrame of alt loci to populate that field
     # any gene IDs with multiple clusters need to be resolved to resolve paralogies
     for gene_id, group in clustered.groupby('gene_id'):
         if len(set(group['#cluster'])) > 1:
             # pick the highest average scoring cluster
+            print("Cluster:")
+            print(group)
+            print("----")
+            print(set(group['#cluster']))
+            print("----")
             best_clusters_list = find_best_group(group, '#cluster')
+            print("Best clusters:")
+            print(best_clusters_list)
+            print("----")
             best_clusters = [int(best_cluster) for best_cluster in best_clusters_list]
             for cluster in best_clusters:
                 alt_loci.append([gene_id, construct_alt_loci(group, cluster)])
+            print("Alt Loci:")
+            print(alt_loci)
+            print("----")
             bad_clusters= group[group['#cluster'].isin(set(group['#cluster']) - set(best_clusters))]
             to_remove_alns.update(set(bad_clusters['gene']))
-    print("Alt Loci: ")
-    print(alt_loci)
+            print("To be removed:")
+            print(to_remove_alns)
+            print("----")
+
     if len(alt_loci) > 0:
         paralog_df = pd.DataFrame(alt_loci, columns=['GeneId', 'GeneAlternateLoci'])
     else:
