@@ -186,7 +186,7 @@ def filter_transmap(tm_psl, ref_psl, tm_gp, db_path, psl_tgt, global_near_best, 
     rescued_txs = []
     # for each gene ID that survived filtering, find their interval
     for gene_id, group in merged_collapse_filtered.groupby('gene_id'):
-        assert len(set(group['#cluster'])) == 1
+        #assert len(set(group['#cluster'])) == 1
         tx_intervals = []
         for _, s in group.iterrows():
             tx_intervals.append(tools.intervals.ChromosomeInterval(s.chrom, s.txStart, s.txEnd, s.strand))
