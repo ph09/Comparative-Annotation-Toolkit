@@ -298,7 +298,7 @@ def find_best_group(group, key):
     cluster or gene_id
     """
     avg_scores = group[[key, 'scores']].groupby(key, as_index=False).mean()
-    if abs(avg_scores.sort_values('scores', ascending=False).iloc[0][key] - avg_scores.sort_values('scores', ascending=False).iloc[1][key]) <= 0.002:
+    if abs(avg_scores.sort_values('scores', ascending=False)[0] - avg_scores.sort_values('scores', ascending=False)[1]) <= 0.002:
         return [avg_scores.sort_values('scores', ascending=False).iloc[0][key], avg_scores.sort_values('scores', ascending=False).iloc[1][key]]
     else:
         return [avg_scores.sort_values('scores', ascending=False).iloc[0][key]]
@@ -344,10 +344,10 @@ def filter_clusters(clustered, transcript_gene_map, gene_name_map, scores, metri
             print(best_clusters_list)
             print("----")
             best_clusters = [int(best_cluster) for best_cluster in best_clusters_list]
+            print("Alt Loci:")
             for cluster in best_clusters:
                 alt_loci.append([gene_id, construct_alt_loci(group, cluster)])
-            print("Alt Loci:")
-            print(alt_loci)
+                print([gene_id, construct_alt_loci(group, cluster)])
             print("----")
             bad_clusters= group[group['#cluster'].isin(set(group['#cluster']) - set(best_clusters))]
             to_remove_alns.update(set(bad_clusters['gene']))
