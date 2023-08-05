@@ -76,6 +76,8 @@ def classify(eval_args):
         tx_dict = tools.transcripts.get_gene_pred_dict(path_dict['gp'])
         aln_modes = ['CDS', 'mRNA'] if tx_mode != 'augCGP' else ['CDS']
         for aln_mode in aln_modes:
+            print("psl:")
+            print(path_dict[aln_mode])
             psl_iter = list(tools.psl.psl_iterator(path_dict[aln_mode]))
             mc_df = metrics_classify(aln_mode, ref_tx_dict, tx_dict, tx_biotype_map, psl_iter, seq_dict)
             ec_df = evaluation_classify(aln_mode, ref_tx_dict, tx_dict, tx_biotype_map, psl_iter, seq_dict)
