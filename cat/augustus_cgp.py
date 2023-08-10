@@ -363,7 +363,7 @@ def write_tree(job,input_file_ids):
     hal = job.fileStore.readGlobalFile(input_file_ids.hal)
     cmd = ['halStats', '--tree', hal]
     tree = tools.fileOps.get_tmp_toil_file()
-    print(tools.procOps.run_proc(cmd))
+    tools.procOps.run_proc(cmd)
     tools.procOps.run_proc(cmd, stdout=tree)
     return job.fileStore.writeGlobalFile(tree)
 
