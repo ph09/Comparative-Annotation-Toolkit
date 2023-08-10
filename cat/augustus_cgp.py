@@ -85,6 +85,7 @@ def setup(job, args, input_file_ids):
     For merging of the gene sets, the auxiliary tool 'joingenes' from the Augustus tool package is used.
     """
     # create a file with the phylogenetic tree in NEWICK format
+    print("Hello")
     tree = write_tree(job, input_file_ids)
 
     # construct all MAF chunks
