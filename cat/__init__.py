@@ -104,6 +104,8 @@ class PipelineTask(luigi.Task):
     pb_genome_chunksize = luigi.IntParameter(default=5000000, significant=False)
     pb_genome_overlap = luigi.IntParameter(default=500000, significant=False)
     pb_cfg = luigi.Parameter(default='augustus_cfgs/extrinsic.M.RM.PB.E.W.cfg', significant=False)
+    # Liftoff parameters
+    liftoff = luigi.BoolParameter(default=True)
     # Hgm parameters
     hgm_cpu = luigi.IntParameter(default=4, significant=False)
     # assemblyHub parameters
@@ -182,6 +184,7 @@ class PipelineTask(luigi.Task):
         args.set('pb_genome_chunksize', self.pb_genome_chunksize, True)
         args.set('pb_genome_overlap', self.pb_genome_overlap, True)
         args.set('pb_cfg', os.path.abspath(self.pb_cfg), True)
+        args.set('liftoff', os.path.abspath(self.liftoff, True))
 
         args.set('augustus_cgp_cfg_template', os.path.abspath(self.augustus_cgp_cfg_template), True)
         args.set('augustus_utr_off', self.augustus_utr_off, True)
@@ -406,6 +409,8 @@ class PipelineTask(luigi.Task):
     def get_modes(self, args):
         """returns a tuple of the execution modes being used here"""
         modes = ['transMap']
+        if args.liftoff == True:
+            modes.append('liftoff')
         if args.augustus_cgp == True:
             modes.append('augCGP')
         if args.augustus == True:
@@ -710,6 +715,8 @@ class RunCat(PipelineWrapperTask):
         yield self.clone(Chaining)
         yield self.clone(TransMap)
         yield self.clone(EvaluateTransMap)
+        if self.liftoff == True:
+            yield self.clone(Liftoff)
         if self.augustus == True:
             yield self.clone(Augustus)
         if self.augustus_cgp == True:
@@ -1481,10 +1488,61 @@ class EvaluateTransMapDriverTask(PipelineTask):
         results = transmap_classify(self.tm_eval_args)
         self.write_to_sql(results)
 
+class Liftoff(PipelineWrapperTask):
+    """
+    Runs Liftoff
+    """
+    @staticmethod
+    def get_args(pipeline_args, genome):
+        base_dir = os.path.join(pipeline_args.work_dir, 'liftoff')
+        ref_files =  ReferenceFiles.get_args(pipeline_args)
+        args = tools.misc.HashableNamespace()
+        args.fasta = GenomeFiles.get_args(pipeline_args, genome).fasta
+        args.ref_fasta = ref_files.transcript_fasta
+        args.ref_gff = pipeline_args.cfg['ANNOTATION'][genome]
+        args.lo_gff = os.path.join(base_dir, genome + '.gff3')
+        args.lo_unmapped = os.path.join(base_dir, genome + '._unmapped.txt')
+        args.intermediate_dir = os.path.join(base_dir, genome, 'intermediate_files')
+        return args
+    
+    def validate(self):
+        for tool in ['liftoff', 'minimap2']:
+            if not tools.misc.is_exec(tool):
+                raise ToolMissingException('{} package not found.'.format(tool))
+    
+    def requires(self):
+        self.validate()
+        pipeline_args = self.get_pipeline_args()
+        for target_genome in pipeline_args.target_genomes:
+            yield self.clone(LiftoffDriver, genome=target_genome)
+    
+class LiftoffDriver(PipelineTask):
+    """
+    Runs Liftoff.
+    """
+    genome = luigi.Parameter()
+
+    def output(self):
+        lo_args = self.get_module_args(Liftoff, genome=self.genome)
+        return luigi.LocalTarget(lo_args.lo_gff), luigi.LocalTarget(lo_args.lo_unmapped), luigi.LocalTarget(lo_args.intermediate_dir)
+
+    def requires(self):
+        return self.clone(PrepareFiles), self.clone(GenomeFiles), self.clone(ReferenceFiles)
+
+    def run(self):
+        lo_args = self.get_module_args(TransMap, genome=self.genome)
+        logger.info('Running liftoff for {}.'.format(self.genome))
+        cmd = ['liftoff', '-g', lo_args.ref_gff, '-p 4', '-copies', '-sc 0.95', '-polish',
+               lo_args.fasta, lo_args.ref_fasta]
+        
+        lo_gf = self.output()
+        with lo_gf.open('w') as outf:
+            tools.procOps.run_proc(cmd, stdout=outf)
+
 
 class Augustus(PipelineWrapperTask):
     """
-    Runs AugustusTM(R) on the coding output from transMap.
+     Runs AugustusTM(R) on the coding output from transMap.
     """
     @staticmethod
     def get_args(pipeline_args, genome):
