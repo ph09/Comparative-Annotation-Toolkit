@@ -184,7 +184,7 @@ class PipelineTask(luigi.Task):
         args.set('pb_genome_chunksize', self.pb_genome_chunksize, True)
         args.set('pb_genome_overlap', self.pb_genome_overlap, True)
         args.set('pb_cfg', os.path.abspath(self.pb_cfg), True)
-        args.set('liftoff', os.path.abspath(self.liftoff, True))
+        args.set('liftoff', self.liftoff, True)
 
         args.set('augustus_cgp_cfg_template', os.path.abspath(self.augustus_cgp_cfg_template), True)
         args.set('augustus_utr_off', self.augustus_utr_off, True)
