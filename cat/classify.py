@@ -36,6 +36,7 @@ txMode:
 3) augTMR
 4) augCGP
 5) augPB
+6) liftoff
 
 alnMode:
 1) CDS

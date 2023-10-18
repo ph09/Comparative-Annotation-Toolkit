@@ -1501,8 +1501,7 @@ class Liftoff(PipelineWrapperTask):
         args.ref_fasta = ref_files.transcript_fasta
         args.ref_gff = pipeline_args.cfg['ANNOTATION'][genome]
         args.lo_gff = os.path.join(base_dir, genome + '.gff3')
-        args.lo_unmapped = os.path.join(base_dir, genome + '._unmapped.txt')
-        args.intermediate_dir = os.path.join(base_dir, genome, 'intermediate_files')
+        args.lo_gp = os.path.join(base_dir, genome + '.gp')
         return args
     
     def validate(self):
@@ -1524,7 +1523,7 @@ class LiftoffDriver(PipelineTask):
 
     def output(self):
         lo_args = self.get_module_args(Liftoff, genome=self.genome)
-        return luigi.LocalTarget(lo_args.lo_gff), luigi.LocalTarget(lo_args.lo_unmapped), luigi.LocalTarget(lo_args.intermediate_dir)
+        return luigi.LocalTarget(lo_args.lo_gff), luigi.LocalTarget(lo_args.lo_gp)
 
     def requires(self):
         return self.clone(PrepareFiles), self.clone(GenomeFiles), self.clone(ReferenceFiles)
@@ -1535,8 +1534,13 @@ class LiftoffDriver(PipelineTask):
         cmd = ['liftoff', '-g', lo_args.ref_gff, '-p 4', '-copies', '-sc 0.95', '-polish',
                lo_args.fasta, lo_args.ref_fasta]
         
-        lo_gf = self.output()
-        with lo_gf.open('w') as outf:
+        lo_output_gff, lo_output_gp = self.output()
+        with lo_output_gff.open('w') as outf:
+            tools.procOps.run_proc(cmd, stdout=outf)
+        
+        with lo_output_gp.open('w') as outf:
+            cmd = ['gff3ToGenePred', '-rnaNameAttr=transcript_id', '-geneNameAttr=gene', '-honorStartStopCodons', '-refseqHacks',
+                    lo_output_gff.path, '/dev/stdout']
             tools.procOps.run_proc(cmd, stdout=outf)
 
 

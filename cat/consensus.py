@@ -1,7 +1,7 @@
 """
 Generates consensus gene set.
 
-This module takes as input the genePreds produced by transMap, AugustusTM(R) and AugustusCGP and generates a consensus
+This module takes as input the genePreds produced by transMap, liftoff, AugustusTM(R) and AugustusCGP and generates a consensus
 of these, producing a filtered gene set.
 
 This process relies on a combination of metrics and evaluations loaded to a sqlite database by the classify module.
@@ -62,7 +62,7 @@ def generate_consensus(args):
     tm_eval_df = load_transmap_evals(args.db_path)
     # load the homGeneMapping data for transMap/augTM/augTMR
     # pd.set_option('max_columns', None)
-    tx_modes = [x for x in args.tx_modes if x in ['transMap', 'augTM', 'augTMR']]
+    tx_modes = [x for x in args.tx_modes if x in ['transMap', 'liftoff', 'augTM', 'augTMR']]
     if args.run_hgm == True:
         hgm_df = pd.concat([load_hgm_vectors(args.db_path, tx_mode) for tx_mode in tx_modes])
     else:
@@ -883,7 +883,7 @@ def calculate_improvement_metrics(final_consensus, scored_df, tm_eval_df, hgm_df
             continue
         elif 'exRef' in c['transcript_modes'] or 'augPB' in c['transcript_modes'] or 'augCGP' in c['transcript_modes']:
             continue
-        elif 'transMap' in c['transcript_modes']:
+        elif 'transMap' in c['transcript_modes'] or 'liftoff' in c['transcript_modes']:
             metrics['Evaluation Improvement']['unchanged'] += 1
             continue
         tx_s = df.loc[aln_id]
