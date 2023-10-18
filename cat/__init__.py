@@ -1499,7 +1499,7 @@ class Liftoff(PipelineWrapperTask):
         args = tools.misc.HashableNamespace()
         args.fasta = GenomeFiles.get_args(pipeline_args, genome).fasta
         args.ref_fasta = ref_files.transcript_fasta
-        args.ref_gff = pipeline_args.cfg['ANNOTATION'][genome]
+        args.ref_gff = ref_files.gtf
         args.lo_gff = os.path.join(base_dir, genome + '.gff3')
         args.lo_unmapped = os.path.join(base_dir, genome + '._unmapped.txt')
         args.intermediate_dir = os.path.join(base_dir, genome, 'intermediate_files')
