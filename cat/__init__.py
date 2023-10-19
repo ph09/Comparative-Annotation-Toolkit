@@ -1530,7 +1530,7 @@ class LiftoffDriver(PipelineTask):
         return self.clone(PrepareFiles), self.clone(GenomeFiles), self.clone(ReferenceFiles)
 
     def run(self):
-        lo_args = self.get_module_args(TransMap, genome=self.genome)
+        lo_args = self.get_module_args(Liftoff, genome=self.genome)
         logger.info('Running liftoff for {}.'.format(self.genome))
         cmd = ['liftoff', '-g', lo_args.ref_gff, '-p 4', '-copies', '-sc 0.95', '-polish',
                lo_args.fasta, lo_args.ref_fasta]
@@ -1917,6 +1917,10 @@ class Hgm(PipelineWrapperTask):
         elif mode == 'exRef':
             tgt_genomes = pipeline_args.external_ref_genomes
             gtf_in_files = {genome: ExternalReferenceFiles.get_args(pipeline_args, genome).annotation_gtf
+                            for genome in tgt_genomes}
+        elif mode == 'liftoff':
+            tgt_genomes = pipeline_args.target_genomes
+            gtf_in_files = {genome: Liftoff.get_args(pipeline_args, genome).lo_gff
                             for genome in tgt_genomes}
         else:
             raise UserException('Invalid mode was passed to Hgm module: {}.'.format(mode))
