@@ -2463,6 +2463,8 @@ class ReportStats(PipelineTask):
             yield self.clone(AugustusPb)
             yield self.clone(FindDenovoParents, mode='augPB')
             yield self.clone(IsoSeqTranscripts)
+        if self.liftoff == True:
+            yield self.clone(Liftoff)
         if self.augustus == True or self.augustus_pb == True or self.augustus_cgp == True:
             if not self.chain_mode:
                 yield self.clone(Hgm)
