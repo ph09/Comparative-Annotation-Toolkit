@@ -54,6 +54,11 @@ class MrnaTmEval(EvaluationColumns, Base):
     __tablename__ = 'mRNA_transMap_Evaluation'
 
 
+class MrnaLoEval(EvaluationColumns, Base):
+    """Table for evaluations of mRNA alignments of transcripts derived from Liftoff"""
+    __tablename__ = 'mRNA_Liftoff_Evaluation'
+
+
 class MrnaAugTmEval(EvaluationColumns, Base):
     """Table for evaluations of mRNA alignments of transcripts derived from AugustusTM"""
     __tablename__ = 'mRNA_augTM_Evaluation'
@@ -68,6 +73,11 @@ class CdsTmEval(EvaluationColumns, Base):
     """Table for evaluations of CDS alignments of transcripts derived from transMap"""
     __tablename__ = 'CDS_transMap_Evaluation'
 
+
+class CdsLoEval(EvaluationColumns, Base):
+    """Table for evaluations of CDS alignments of transcripts derived from Liftoff"""
+    __tablename__ = 'CDS_Liftoff_Evaluation'
+    
 
 class CdsAugTmEval(EvaluationColumns, Base):
     """Table for evaluations of CDS alignments of transcripts derived from AugustusTM"""
