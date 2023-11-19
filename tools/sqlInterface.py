@@ -79,6 +79,11 @@ class CdsLiftoffEval(EvaluationColumns, Base):
     __tablename__ = 'CDS_liftoff_Evaluation'
 
 
+class CdsLiftoffEval(EvaluationColumns, Base):
+    """Table for evaluations of CDS alignments of transcripts derived from liftoff"""
+    __tablename__ = 'CDS_liftoff_Evaluation'
+    
+
 class CdsAugTmEval(EvaluationColumns, Base):
     """Table for evaluations of CDS alignments of transcripts derived from AugustusTM"""
     __tablename__ = 'CDS_augTM_Evaluation'

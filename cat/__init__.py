@@ -184,7 +184,7 @@ class PipelineTask(luigi.Task):
         args.set('pb_genome_chunksize', self.pb_genome_chunksize, True)
         args.set('pb_genome_overlap', self.pb_genome_overlap, True)
         args.set('pb_cfg', os.path.abspath(self.pb_cfg), True)
-        args.set('liftoff', os.path.abspath(self.liftoff, True))
+        args.set('liftoff', self.liftoff, True)
 
         args.set('augustus_cgp_cfg_template', os.path.abspath(self.augustus_cgp_cfg_template), True)
         args.set('augustus_utr_off', self.augustus_utr_off, True)
@@ -1499,7 +1499,7 @@ class Liftoff(PipelineWrapperTask):
         args = tools.misc.HashableNamespace()
         args.fasta = GenomeFiles.get_args(pipeline_args, genome).fasta
         args.ref_fasta = ref_files.transcript_fasta
-        args.ref_gff = pipeline_args.cfg['ANNOTATION'][genome]
+        args.ref_gff = ref_files.annotation_gtf
         args.lo_gff = os.path.join(base_dir, genome + '.gff3')
         args.lo_gp = os.path.join(base_dir, genome + '.gp')
         return args
@@ -1523,13 +1523,13 @@ class LiftoffDriver(PipelineTask):
 
     def output(self):
         lo_args = self.get_module_args(Liftoff, genome=self.genome)
-        return luigi.LocalTarget(lo_args.lo_gff), luigi.LocalTarget(lo_args.lo_gp)
+        return luigi.LocalTarget(lo_args.lo_gff)
 
     def requires(self):
         return self.clone(PrepareFiles), self.clone(GenomeFiles), self.clone(ReferenceFiles)
 
     def run(self):
-        lo_args = self.get_module_args(TransMap, genome=self.genome)
+        lo_args = self.get_module_args(Liftoff, genome=self.genome)
         logger.info('Running liftoff for {}.'.format(self.genome))
         cmd = ['liftoff', '-g', lo_args.ref_gff, '-p 4', '-copies', '-sc=0.95', '-polish',
                lo_args.fasta, lo_args.ref_fasta]
@@ -1921,6 +1921,10 @@ class Hgm(PipelineWrapperTask):
         elif mode == 'exRef':
             tgt_genomes = pipeline_args.external_ref_genomes
             gtf_in_files = {genome: ExternalReferenceFiles.get_args(pipeline_args, genome).annotation_gtf
+                            for genome in tgt_genomes}
+        elif mode == 'liftoff':
+            tgt_genomes = pipeline_args.target_genomes
+            gtf_in_files = {genome: Liftoff.get_args(pipeline_args, genome).lo_gff
                             for genome in tgt_genomes}
         else:
             raise UserException('Invalid mode was passed to Hgm module: {}.'.format(mode))
@@ -2467,6 +2471,8 @@ class ReportStats(PipelineTask):
             yield self.clone(AugustusPb)
             yield self.clone(FindDenovoParents, mode='augPB')
             yield self.clone(IsoSeqTranscripts)
+        if self.liftoff == True:
+            yield self.clone(Liftoff)
         if self.augustus == True or self.augustus_pb == True or self.augustus_cgp == True:
             if not self.chain_mode:
                 yield self.clone(Hgm)
