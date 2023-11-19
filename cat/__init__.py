@@ -1523,7 +1523,7 @@ class LiftoffDriver(PipelineTask):
 
     def output(self):
         lo_args = self.get_module_args(Liftoff, genome=self.genome)
-        return luigi.LocalTarget(lo_args.lo_gff)
+        return luigi.LocalTarget(lo_args.lo_gff, lo_args.lo_gp)
 
     def requires(self):
         return self.clone(PrepareFiles), self.clone(GenomeFiles), self.clone(ReferenceFiles)
