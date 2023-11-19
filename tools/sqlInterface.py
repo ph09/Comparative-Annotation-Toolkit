@@ -54,6 +54,11 @@ class MrnaTmEval(EvaluationColumns, Base):
     __tablename__ = 'mRNA_transMap_Evaluation'
 
 
+class MrnaLiftoffEval(EvaluationColumns, Base):
+    """Table for evaluations of mRNA alignments of transcripts derived from liftoff"""
+    __tablename__ = 'mRNA_liftoff_Evaluation'
+
+
 class MrnaAugTmEval(EvaluationColumns, Base):
     """Table for evaluations of mRNA alignments of transcripts derived from AugustusTM"""
     __tablename__ = 'mRNA_augTM_Evaluation'
@@ -67,6 +72,11 @@ class MrnaAugTmrEval(EvaluationColumns, Base):
 class CdsTmEval(EvaluationColumns, Base):
     """Table for evaluations of CDS alignments of transcripts derived from transMap"""
     __tablename__ = 'CDS_transMap_Evaluation'
+
+
+class CdsLiftoffEval(EvaluationColumns, Base):
+    """Table for evaluations of CDS alignments of transcripts derived from liftoff"""
+    __tablename__ = 'CDS_liftoff_Evaluation'
 
 
 class CdsAugTmEval(EvaluationColumns, Base):
@@ -117,6 +127,11 @@ class MrnaTmMetrics(MetricsColumns, Base):
     __tablename__ = 'mRNA_transMap_Metrics'
 
 
+class MrnaLiftoffMetrics(MetricsColumns, Base):
+    """Table for evaluations of mRNA alignments of transcripts derived from liftoff"""
+    __tablename__ = 'mRNA_liftoff_Metrics'
+
+
 class MrnaAugTmMetrics(MetricsColumns, Base):
     """Table for evaluations of mRNA alignments of transcripts derived from AugustusTM"""
     __tablename__ = 'mRNA_augTM_Metrics'
@@ -130,6 +145,11 @@ class MrnaAugTmrMetrics(MetricsColumns, Base):
 class CdsTmMetrics(MetricsColumns, Base):
     """Table for evaluations of CDS alignments of transcripts derived from transMap"""
     __tablename__ = 'CDS_transMap_Metrics'
+
+
+class CdsLiftoffMetrics(MetricsColumns, Base):
+    """Table for evaluations of CDS alignments of transcripts derived from liftoff"""
+    __tablename__ = 'CDS_liftoff_Metrics'
 
 
 class CdsAugTmMetrics(MetricsColumns, Base):
@@ -159,6 +179,11 @@ class HgmColumns(object):
 class TmIntronSupport(HgmColumns, Base):
     """Table for intron support of transMap transcripts from homGeneMapping"""
     __tablename__ = 'transMap_Hgm'
+
+
+class LiftoffIntronSupport(HgmColumns, Base):
+    """Table for intron support of liftoff transcripts from homGeneMapping"""
+    __tablename__ = 'liftoff_Hgm'
 
 
 class AugTmIntronSupport(HgmColumns, Base):
@@ -234,17 +259,19 @@ def start_session(db_path):
 
 tables = {'hgm': {'augCGP': AugCgpIntronSupport, 'augTM': AugTmIntronSupport,
                   'augTMR': AugTmrIntronSupport, 'transMap': TmIntronSupport,
-                  'augPB': AugPbIntronSupport, 'exRef': ExRefIntronSupport},
+                  'augPB': AugPbIntronSupport, 'exRef': ExRefIntronSupport,
+                  'liftoff': LiftoffIntronSupport},
           'CDS': {'augTM': {'metrics': CdsAugTmMetrics, 'evaluation': CdsAugTmEval},
                   'augTMR': {'metrics': CdsAugTmrMetrics, 'evaluation': CdsAugTmrEval},
-                  'transMap': {'metrics': CdsTmMetrics, 'evaluation': CdsTmEval}},
+                  'transMap': {'metrics': CdsTmMetrics, 'evaluation': CdsTmEval},
+                  'liftoff': {'metrics': CdsLiftoffMetrics, 'evaluation': CdsLiftoffEval}},
           'mRNA': {'augTM': {'metrics': MrnaAugTmMetrics, 'evaluation': MrnaAugTmEval},
                    'augTMR': {'metrics': MrnaAugTmrMetrics, 'evaluation': MrnaAugTmrEval},
-                   'transMap': {'metrics': MrnaTmMetrics, 'evaluation': MrnaTmEval}},
+                   'transMap': {'metrics': MrnaTmMetrics, 'evaluation': MrnaTmEval},
+                   'liftoff': {'metrics': MrnaLiftoffMetrics, 'evaluation': MrnaLiftoffEval}},
           'alt_names': {'exRef': ExRefAlternativeGenes,
                         'augPB': AugPbAlternativeGenes,
                         'augCGP': AugCgpAlternativeGenes}}
-
 
 ###
 # Attributes functions -- read data from the annotation table

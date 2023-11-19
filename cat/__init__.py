@@ -1531,7 +1531,7 @@ class LiftoffDriver(PipelineTask):
     def run(self):
         lo_args = self.get_module_args(TransMap, genome=self.genome)
         logger.info('Running liftoff for {}.'.format(self.genome))
-        cmd = ['liftoff', '-g', lo_args.ref_gff, '-p 4', '-copies', '-sc 0.95', '-polish',
+        cmd = ['liftoff', '-g', lo_args.ref_gff, '-p 4', '-copies', '-sc=0.95', '-polish',
                lo_args.fasta, lo_args.ref_fasta]
         
         lo_output_gff, lo_output_gp = self.output()
