@@ -1536,7 +1536,8 @@ class LiftoffDriver(PipelineTask):
         cmd = ['liftoff', '-g', lo_args.ref_gff, '-dir', lo_args.lo_intermediate_files, '-u', lo_args.lo_unmapped, '-p 4', '-copies', '-sc=0.95', '-polish',
                lo_args.fasta, lo_args.ref_fasta]
         
-        lo_output_gff, lo_output_gp = self.output()
+        lo_output_gff = self.output()[0]
+        lo_output_gp = self.output()[1]
         with lo_output_gff.open('w') as outf:
             tools.procOps.run_proc(cmd, stdout=outf)
         
