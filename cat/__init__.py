@@ -1502,6 +1502,8 @@ class Liftoff(PipelineWrapperTask):
         args.ref_gff = ref_files.annotation_gtf
         args.lo_gff = os.path.join(base_dir, genome + '.gff3')
         args.lo_gp = os.path.join(base_dir, genome + '.gp')
+        args.lo_intermediate_files = os.path.join(base_dir, genome + '_intermediate')
+        args.lo_unmapped = os.path.join(base_dir, genome + '_unmapped.txt' )
         return args
     
     def validate(self):
@@ -1523,7 +1525,7 @@ class LiftoffDriver(PipelineTask):
 
     def output(self):
         lo_args = self.get_module_args(Liftoff, genome=self.genome)
-        return luigi.LocalTarget(lo_args.lo_gff), luigi.LocalTarget(lo_args.lo_gp)
+        return luigi.LocalTarget(lo_args.lo_gff), luigi.LocalTarget(lo_args.lo_gp), luigi.LocalTarget(lo_args.lo_intermediate_files), luigi.LocalTarget(lo_args.lo_unmapped)
 
     def requires(self):
         return self.clone(PrepareFiles), self.clone(GenomeFiles), self.clone(ReferenceFiles)
@@ -1531,7 +1533,7 @@ class LiftoffDriver(PipelineTask):
     def run(self):
         lo_args = self.get_module_args(Liftoff, genome=self.genome)
         logger.info('Running liftoff for {}.'.format(self.genome))
-        cmd = ['liftoff', '-g', lo_args.ref_gff, '-p 4', '-copies', '-sc=0.95', '-polish',
+        cmd = ['liftoff', '-g', lo_args.ref_gff, '-dir', lo_args.lo_intermediate_files, '-u', lo_args.lo_unmapped, '-p 4', '-copies', '-sc=0.95', '-polish',
                lo_args.fasta, lo_args.ref_fasta]
         
         lo_output_gff, lo_output_gp = self.output()
