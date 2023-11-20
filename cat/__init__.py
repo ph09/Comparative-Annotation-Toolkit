@@ -1994,6 +1994,8 @@ class HgmDriverTask(PipelineTask):
         elif self.mode == 'augPB':
             yield self.clone(AugustusPb)
             yield self.clone(FindDenovoParents, mode='augPB')
+        elif self.mode == "liftoff":
+            yield self.clone(Liftoff)
         elif self.mode == 'exRef':
             yield self.clone(FindDenovoParents, mode='exRef')
         else:
